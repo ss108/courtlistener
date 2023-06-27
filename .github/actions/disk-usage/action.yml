@@ -1,9 +1,0 @@
-name: "Determine Space Usage"
-description: "Find files consuming large space"
-runs:
-  using: "composite"
-  steps:
-    - run: df -h
-      shell: bash
-    - run: sudo find / -xdev -type f -size +500M -print -exec ls -lh {} \; 2>/dev/null | awk '{print $3, $4, $5, $9}'
-      shell: bash
