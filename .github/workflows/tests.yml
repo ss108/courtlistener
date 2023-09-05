@@ -23,8 +23,12 @@ jobs:
           large-packages: true
           docker-images: true
           swap-storage: true
+      - name: Check out CourtListener
+        uses: actions/checkout@v3
+        with:
+          path: courtlistener
       - name: Determine What Is Consuming So Much Space
-        uses: ./.github/actions/disk-usage
+        uses: ./courtlistener/.github/actions/disk-usage
   build:
     needs: free-disk-space
     runs-on: ubuntu-latest
@@ -55,10 +59,6 @@ jobs:
           sudo find solr -type d -exec chmod 775 {} \;
           sudo find data -type f -exec chmod 664 {} \;
           sudo find solr -type f -exec chmod 664 {} \;
-      - name: Check out CourtListener
-        uses: actions/checkout@v3
-        with:
-          path: courtlistener
 
       - name: Create the .env settings file
         working-directory: courtlistener/
@@ -94,7 +94,7 @@ jobs:
             ${{ runner.os }}-buildx-celery-
         # rm later
       - name: Determine What Is Consuming So Much Space
-        uses: ./.github/actions/disk-usage
+        uses: ./courtlistener/.github/actions/disk-usage
 
       - name: Build latest docker django image
         uses: docker/build-push-action@v4
@@ -126,7 +126,7 @@ jobs:
         run: docker network create -d bridge --attachable cl_net_overlay
         # rm later
       - name: Determine What Is Consuming So Much Space
-        uses: ./.github/actions/disk-usage
+        uses: ./courtlistener/.github/actions/disk-usage
       - name: Start docker compose
         working-directory: courtlistener/docker/courtlistener
         run: |
