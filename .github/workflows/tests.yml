@@ -23,6 +23,8 @@ jobs:
           large-packages: true
           docker-images: true
           swap-storage: true
+      - name: Check Starting Disk Space
+        run: df -h
   build:
     needs: free-disk-space
     runs-on: ubuntu-latest
@@ -115,12 +117,22 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache-celery
           cache-to: type=local,dest=/tmp/.buildx-cache-celery-new
 
+      - name: Check Disk Usage After Initial Builds
+        run: du -sh *
+
       # Docker images are ready. Start them up.
       - name: Create docker network
         run: docker network create -d bridge --attachable cl_net_overlay
       - name: Start docker compose
         working-directory: courtlistener/docker/courtlistener
-        run: docker-compose -f docker-compose.yml -f docker-compose.tmpfs.yml up -d
+        run: |
+          while true; do df -h; sleep 20; done &
+
+          BACKGROUND_PID=$!
+
+          docker-compose -f docker-compose.yml -f docker-compose.tmpfs.yml up -d
+
+          kill $BACKGROUND_PID
         env:
           CELERY_DOCKER_IMAGE: "localhost:5000/freelawproject/courtlistener:latest-celery-${{ github.sha }}"
           DJANGO_DOCKER_IMAGE: "localhost:5000/freelawproject/courtlistener:latest-web-dev-${{ github.sha }}"
