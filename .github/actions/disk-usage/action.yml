@@ -1,0 +1,8 @@
+name: "Determine Space Usage"
+description: "Find files consuming large space"
+runs:
+  using: "composite"
+  steps:
+    - run: df -h
+    - run: find / -xdev -type f -size +500M -exec ls -lh {} \; | awk '{print $3, $4, $5, $9}'
+      shell: bash
