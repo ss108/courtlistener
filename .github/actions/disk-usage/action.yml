@@ -4,5 +4,6 @@ runs:
   using: "composite"
   steps:
     - run: df -h
+      shell: bash
     - run: find / -xdev -type f -size +500M -exec ls -lh {} \; | awk '{print $3, $4, $5, $9}'
       shell: bash
