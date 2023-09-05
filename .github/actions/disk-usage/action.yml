@@ -5,5 +5,5 @@ runs:
   steps:
     - run: df -h
       shell: bash
-    - run: find / -xdev -type f -size +500M -exec ls -lh {} \; | awk '{print $3, $4, $5, $9}'
+    - run: sudo find / -xdev -type f -size +500M -print -exec ls -lh {} \; 2>/dev/null | awk '{print $3, $4, $5, $9}'
       shell: bash
