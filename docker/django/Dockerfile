@@ -22,6 +22,11 @@ RUN apt-get update --option "Acquire::Retries=3" --quiet=2 && \
 # https://github.com/freelawproject/courtlistener/issues/2827
 ENV PGSSLCERT=/tmp/postgresql.crt
 
+
+# Need to do this during development in order to use VSCode Docker extension
+# Otherwise, there is a permissions error when VSCode tires to `mkdir -p /var/www/.vscode-server...`
+RUN chown -R www-data:www-data /var/www && usermod --shell /bin/bash www-data
+
 # poetry
 # https://python-poetry.org/docs/configuration/#using-environment-variables
 ENV POETRY_VERSION=1.6.1 \
@@ -107,9 +112,6 @@ CMD celery \
 
 FROM python-base as web-dev
 
-# Need to do this during development in order to use VSCode Docker extension
-# Otherwise, there is a permissions error when VSCode tires to `mkdir -p /var/www/.vscode-server...`
-RUN chown -R www-data:www-data /var/www && usermod --shell /bin/bash www-data
 
 USER www-data
 CMD python /opt/courtlistener/manage.py migrate && \
