@@ -32,6 +32,7 @@ from cl.search.models import (
     RECAPDocument,
 )
 from cl.search.tasks import add_items_to_solr
+from cl.opinion_page.types import RECAPCitationViewData
 
 # This is the distance two reporter abbreviations can be from each other if
 # they are considered parallel reporters. For example,
@@ -298,3 +299,19 @@ def store_recap_citations(document: RECAPDocument) -> None:
         ]
 
         OpinionsCitedByRECAPDocument.objects.bulk_create(objects_to_create)
+
+def get_citations_from(recap_doc_id: int, top_k: int = None) -> List[RECAPCitationViewData]:
+    """
+    This method retrieves the caselaw citations within a given RECAPDocument
+    along with related info that is needed for display on front-end.
+    If top_k is provided -> returns the k most-cited opinions.
+    """
+
+    query = OpinionsCitedByRECAPDocument.objects.filter(
+        citing_document_id=recap_doc_id
+    ).select_related('cited_opinion__cluster')
+    
+    if top_k is not None:
+        query = query.order_by("-depth")[:top_k]
+
+    return [RECAPCitationViewData(**result) for result in query.all()] 
