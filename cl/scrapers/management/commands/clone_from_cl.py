@@ -375,8 +375,10 @@ def clone_docket(
             "tags",
             "panel",
             "idb_data",
+            "detail",
         ]:
-            del docket_data[f]
+            if f in docket_data:
+                del docket_data[f]
 
         with transaction.atomic():
             # Get or create required objects
@@ -384,7 +386,7 @@ def clone_docket(
                 clone_court(session, [get_id_from_url(docket_data["court"])])[
                     0
                 ]
-                if docket_data["court"]
+                if "court" in docket_data and docket_data["court"] is not None
                 else None
             )
 
@@ -392,7 +394,7 @@ def clone_docket(
                 clone_court(
                     session, [get_id_from_url(docket_data["appeal_from"])]
                 )[0]
-                if docket_data["appeal_from"]
+                if "appeal_from" in docket_data and docket_data["appeal_from"] is not None
                 else None
             )
 
@@ -402,7 +404,7 @@ def clone_docket(
                     [get_id_from_url(docket_data["assigned_to"])],
                     person_positions,
                 )[0]
-                if docket_data["assigned_to"]
+                if "assigned_to" in docket_data and docket_data["assigned_to"] is not None
                 else None
             )
 

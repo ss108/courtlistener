@@ -50,6 +50,7 @@ from cl.lib.search_utils import (
     make_stats_variable,
     merge_form_with_courts,
     regroup_snippets,
+    solr_is_up
 )
 from cl.search.constants import RELATED_PATTERN
 from cl.search.documents import AudioDocument, ParentheticalGroupDocument
